@@ -273,11 +273,15 @@ function closePdf(){var md=document.getElementById("md");if(md)md.classList.remo
 document.addEventListener("keydown",function(e){if(e.key==="Escape")closePdf()});
 document.querySelectorAll(".pj").forEach(function(c,i){
  if(!LINKS[i])return;
- var w=document.createElement("div");w.className="acts";
- var a=document.createElement("a");a.className="btn";a.href=LINKS[i];a.target="_blank";a.rel="noopener";a.textContent="📖 Xem bài tập";
- var d=document.createElement("a");d.className="btn alt";d.href=LINKS[i];d.setAttribute("download","bai-tap-0"+(i+1)+".pdf");d.textContent="⬇ Tải PDF";
- w.appendChild(a);w.appendChild(d);
- var old=c.querySelector(".btn");if(old)old.replaceWith(w);
+ var a=document.createElement("a");
+ a.className="btn";
+ a.href=LINKS[i];
+ a.target="_blank";
+ a.rel="noopener";
+ a.textContent="📖 Mở bài tập";
+ var old=c.querySelector(".acts");
+ if(old)old.replaceWith(a);
+ else {var prior=c.querySelector(".btn");if(prior)prior.replaceWith(a);}
 });
 function sendFb(){var g=function(i){return document.getElementById(i).value.trim()},n=g("fn"),e=g("fe"),m=g("fm"),s=document.getElementById("fs");if(!/^\S+@\S+\.\S+$/.test(e)||!m){s.textContent="Vui lòng nhập email hợp lệ và nội dung góp ý.";return}var a=document.createElement("a");a.href="mailto:tamt00228@gmail.com?subject="+encodeURIComponent("Góp ý portfolio từ "+(n||e))+"&body="+encodeURIComponent(m+"\n\nNgười gửi: "+(n||"(ẩn danh)")+"\nEmail: "+e);a.target="_blank";a.rel="noopener";document.body.appendChild(a);a.click();a.remove();s.textContent="Cảm ơn bạn! Ứng dụng email sẽ mở để bạn bấm gửi. Nếu không mở, hãy gửi thẳng tới tamt00228@gmail.com."}
 var eq=document.getElementById("eq");for(var i=0;i<26;i++){var b=document.createElement("b");b.style.animationDelay=(Math.random()*-1)+"s";b.style.animationDuration=(.6+Math.random()*.8)+"s";eq.appendChild(b)}
