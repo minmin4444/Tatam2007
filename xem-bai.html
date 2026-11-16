@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Đang mở bài tập | Tạ Thị Tâm</title>
+<style>
+:root{color-scheme:dark;--bg:#10051d;--panel:#211035;--ink:#fff4ff;--mute:#d4bde8;--p1:#c77dff;--p2:#ff7ab8}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:Arial,sans-serif}
+body{display:flex;flex-direction:column;min-height:100vh}
+header{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;background:rgba(25,10,42,.97);border-bottom:1px solid rgba(199,125,255,.28)}
+.brand{font-weight:700;color:#ffc4e6;margin-right:auto}
+#docTitle{font-size:14px;color:var(--mute);max-width:100%;width:100%;order:3}
+.actions{display:flex;gap:8px;flex-wrap:wrap}
+.btn{display:inline-block;padding:9px 14px;border-radius:22px;text-decoration:none;color:#fff;background:linear-gradient(90deg,var(--p1),var(--p2));font-size:13px;font-weight:700}
+.btn.alt{background:transparent;border:1px solid var(--p1);color:#efcfff}
+main{flex:1;min-height:0;display:flex;flex-direction:column}
+#viewer{width:100%;height:calc(100vh - 112px);min-height:420px;border:0;background:#fff;flex:1}
+.note{padding:9px 14px;text-align:center;font-size:12px;line-height:1.5;color:var(--mute);background:var(--panel)}
+@media(max-width:560px){header{padding:10px}.brand{width:100%}.actions{width:100%}.btn{flex:1;text-align:center}#viewer{height:calc(100vh - 150px);min-height:360px}}
+</style>
+</head>
+<body>
+<header>
+  <div class="brand">♪ Tạ Thị Tâm · Portfolio</div>
+  <div class="actions">
+    <a class="btn alt" href="index.html#du-an">← Quay lại dự án</a>
+    <a class="btn alt" id="openBtn" target="_blank" rel="noopener">Mở PDF ở tab mới ↗</a>
+    <a class="btn" id="downloadBtn" download>Tải PDF</a>
+  </div>
+  <div id="docTitle">Đang tải tài liệu…</div>
+</header>
+<main>
+  <iframe id="viewer" title="Trình xem tài liệu PDF" src="about:blank"></iframe>
+  <div class="note">Tài liệu được mở trong khung xem của trình duyệt. Nếu khung xem không hiển thị, nhấn “Mở PDF ở tab mới”.</div>
+</main>
+<script>
+(function(){
+  var docs={
+    "01":{name:"Bài 1 – Thao tác cơ bản với tệp tin và thư mục",file:"projects/bai-tap-01.pdf"},
+    "02":{name:"Bài 2 – Tìm kiếm và đánh giá thông tin học thuật",file:"projects/bai-tap-02.pdf"},
+    "03":{name:"Bài 3 – Viết prompt hiệu quả",file:"projects/bai-tap-03.pdf"},
+    "04":{name:"Bài 4 – Công cụ hợp tác trực tuyến",file:"projects/bai-tap-04.pdf"},
+    "05":{name:"Bài 5 – Trưng bày sản phẩm nội dung số",file:"projects/bai-tap-05.pdf"},
+    "06":{name:"Bài 6 – Sử dụng AI có trách nhiệm trong học tập và nghiên cứu",file:"projects/bai-tap-06.pdf"}
+  };
+  var key=new URLSearchParams(location.search).get("bai")||"01";
+  var doc=docs[key];
+  var title=document.getElementById("docTitle");
+  var frame=document.getElementById("viewer");
+  if(!doc){
+    title.textContent="Không tìm thấy bài tập được yêu cầu.";
+    frame.src="about:blank";
+    return;
+  }
+  document.title=doc.name+" | Tạ Thị Tâm";
+  title.textContent=doc.name;
+  var file=doc.file+"#toolbar=1&navpanes=0&view=FitH";
+  frame.src=file;
+  document.getElementById("openBtn").href=doc.file;
+  document.getElementById("downloadBtn").href=doc.file;
+})();
+</script>
+</body>
+</html>
