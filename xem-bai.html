@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="robots" content="noindex">
 <title>Trình xem bài tập | Tạ Thị Tâm</title>
 <style>
@@ -17,7 +17,7 @@ header{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;
 .btn{display:inline-block;padding:9px 14px;border-radius:22px;text-decoration:none;color:#fff;background:linear-gradient(90deg,var(--p1),var(--p2));font-size:13px;font-weight:700;border:0;cursor:pointer}
 .btn.alt{background:transparent;border:1px solid var(--p1);color:#efcfff}
 main{flex:1;min-height:0;display:flex;flex-direction:column}
-#viewer{display:block;width:100%;height:calc(100vh - 130px);min-height:420px;border:0;background:#fff;flex:1}
+#viewer{display:block;width:100%;height:calc(100vh - 128px);min-height:420px;border:0;background:#fff;flex:1}
 .note{padding:10px 14px;text-align:center;font-size:12px;line-height:1.55;color:var(--mute);background:var(--panel)}
 @media(max-width:560px){
  header{padding:10px}.brand{width:100%}.actions{width:100%}.btn{flex:1;text-align:center}
@@ -30,17 +30,16 @@ main{flex:1;min-height:0;display:flex;flex-direction:column}
   <div class="brand">♪ Tạ Thị Tâm · Portfolio</div>
   <div class="actions">
     <a class="btn alt" href="index.html#du-an">← Quay lại dự án</a>
-    <a class="btn" id="openBtn" target="_blank" rel="noopener">Mở trình xem riêng ↗</a>
+    <a class="btn" id="openBtn" target="_blank" rel="noopener">Mở PDF ở tab mới ↗</a>
     <a class="btn alt" id="githubBtn" target="_blank" rel="noopener">Xem bản trên GitHub</a>
-    <a class="btn alt" id="downloadBtn">Tải PDF</a>
   </div>
   <div id="docTitle">Đang chuẩn bị tài liệu…</div>
 </header>
 <main>
   <iframe id="viewer" title="Trình xem tài liệu PDF" src="about:blank" allow="fullscreen"></iframe>
   <div class="note">
-    Tài liệu được hiển thị qua trình xem trực tuyến, không tự tải về máy.
-    Nếu khung xem không hiện, hãy chọn “Mở trình xem riêng”. Nút “Tải PDF” chỉ dùng khi bạn chủ động cần lưu tệp.
+    Tài liệu được mở từ máy chủ GitHub Pages trong khung xem của trình duyệt, không dùng đường dẫn tải thô.
+    Nếu khung xem không hiển thị, hãy chọn “Mở PDF ở tab mới” hoặc “Xem bản trên GitHub”.
   </div>
 </main>
 <script>
@@ -54,30 +53,23 @@ main{flex:1;min-height:0;display:flex;flex-direction:column}
     "05":{name:"Bài 5 – Trưng bày sản phẩm nội dung số",file:"bai-tap-05.pdf"},
     "06":{name:"Bài 6 – Sử dụng AI có trách nhiệm trong học tập và nghiên cứu",file:"bai-tap-06.pdf"}
   };
-  var params=new URLSearchParams(window.location.search);
-  var key=params.get("bai")||"01";
+  var key=new URLSearchParams(window.location.search).get("bai")||"01";
   var doc=docs[key];
   var title=document.getElementById("docTitle");
   var frame=document.getElementById("viewer");
-  var openBtn=document.getElementById("openBtn");
-  var githubBtn=document.getElementById("githubBtn");
-  var downloadBtn=document.getElementById("downloadBtn");
   if(!doc){
     title.textContent="Không tìm thấy bài tập được yêu cầu.";
+    frame.src="about:blank";
     frame.style.display="none";
     return;
   }
   document.title=doc.name+" | Tạ Thị Tâm";
   title.textContent=doc.name;
-  var rawUrl="https://raw.githubusercontent.com/tamt00228-cyber/Tatam2007/main/projects/"+doc.file;
+  var pdfUrl=new URL("projects/"+doc.file,window.location.href).href;
   var githubUrl="https://github.com/tamt00228-cyber/Tatam2007/blob/main/projects/"+doc.file;
-  var googleViewer="https://docs.google.com/gview?embedded=1&url="+encodeURIComponent(rawUrl);
-  var googleViewerTab="https://docs.google.com/gview?url="+encodeURIComponent(rawUrl);
-  frame.src=googleViewer;
-  openBtn.href=googleViewerTab;
-  githubBtn.href=githubUrl;
-  downloadBtn.href=rawUrl;
-  downloadBtn.setAttribute("download",doc.file);
+  frame.src=pdfUrl+"#toolbar=1&navpanes=0&view=FitH";
+  document.getElementById("openBtn").href=pdfUrl;
+  document.getElementById("githubBtn").href=githubUrl;
 })();
 </script>
 </body>
