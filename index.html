@@ -22,6 +22,7 @@ header{position:sticky;top:env(safe-area-inset-top,0px);z-index:31;backdrop-filt
 nav{display:flex;gap:2px;flex-wrap:wrap}
 nav a{text-decoration:none;color:var(--mute);font-size:.88rem;padding:5px 11px;border-radius:99px;transition:.25s}
 nav a:hover{background:linear-gradient(90deg,var(--p1),var(--p2));color:#fff}
+.nav-cta{background:linear-gradient(90deg,var(--p1),var(--p2));color:#fff!important;font-weight:600;box-shadow:0 5px 16px var(--glow)}
 main,.hero{max-width:1080px;margin:auto;padding:0 20px}
 .hero{min-height:88vh;display:grid;grid-template-columns:1.15fr .85fr;gap:36px;align-items:center;position:relative;padding-top:40px;padding-bottom:30px}
 #fx{position:fixed;inset:0;pointer-events:none;z-index:0;overflow:hidden}
@@ -151,7 +152,7 @@ nav a.act{background:linear-gradient(90deg,var(--p1),var(--p2));color:#fff}
 <div id="fx" aria-hidden="true"></div>
 <div id="md" role="dialog" aria-modal="true"><div class="tb"><b id="mt"></b><a id="mo" class="btn alt" target="_blank" rel="noopener">↗ Mở tab mới</a><button class="btn" onclick="closePdf()">✕ Đóng</button></div><div id="pv"></div></div>
 <header><div class="bar"><a class="logo" href="#gioi-thieu">♪ Tạ Thị Tâm</a>
-<nav><a href="#gioi-thieu" data-p="gioi-thieu">Giới thiệu</a><a href="#du-an" data-p="du-an">Dự án</a><a href="#tong-ket" data-p="tong-ket">Tổng kết &amp; Liên hệ</a></nav></div></header>
+<nav><a href="#gioi-thieu" data-p="gioi-thieu">Giới thiệu</a><a href="#du-an" data-p="du-an">Dự án</a><a href="#tong-ket" data-p="tong-ket">Tổng kết &amp; Liên hệ</a><a class="nav-cta" href="https://drive.google.com/drive/folders/1QBrKKVduZOBXxj9aG8kCrHl8jIn9G61h?usp=drive_link" target="_blank" rel="noopener noreferrer" aria-label="Xem bài tập trên Google Drive">XEM BÀI TẬP ↗</a></nav></div></header>
 
 <div class="pg" data-page="gioi-thieu">
 <div class="hero" id="top">
