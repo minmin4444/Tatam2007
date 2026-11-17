@@ -30,7 +30,7 @@ main{flex:1;min-height:0;display:flex;flex-direction:column}
   <div class="brand">♪ Tạ Thị Tâm · Portfolio</div>
   <div class="actions">
     <a class="btn alt" href="index.html#du-an">← Quay lại dự án</a>
-    <a class="btn" id="openBtn" target="_blank" rel="noopener">Mở PDF ở tab mới ↗</a>
+    <a class="btn" id="openBtn" target="_blank" rel="noopener">Mở trình xem ở tab mới ↗</a>
     <a class="btn alt" id="githubBtn" target="_blank" rel="noopener">Xem bản trên GitHub</a>
   </div>
   <div id="docTitle">Đang chuẩn bị tài liệu…</div>
@@ -38,8 +38,7 @@ main{flex:1;min-height:0;display:flex;flex-direction:column}
 <main>
   <iframe id="viewer" title="Trình xem tài liệu PDF" src="about:blank" allow="fullscreen"></iframe>
   <div class="note">
-    Tài liệu được mở từ máy chủ GitHub Pages trong khung xem của trình duyệt, không dùng đường dẫn tải thô.
-    Nếu khung xem không hiển thị, hãy chọn “Mở PDF ở tab mới” hoặc “Xem bản trên GitHub”.
+    Tài liệu được hiển thị trực tiếp trong trang bằng trình xem PDF nhúng. Nếu khung xem chưa hiện nội dung, hãy chọn “Mở trình xem ở tab mới” hoặc “Xem bản trên GitHub”.
   </div>
 </main>
 <script>
@@ -66,9 +65,10 @@ main{flex:1;min-height:0;display:flex;flex-direction:column}
   document.title=doc.name+" | Tạ Thị Tâm";
   title.textContent=doc.name;
   var pdfUrl=new URL("projects/"+doc.file,window.location.href).href;
+  var viewerUrl="https://docs.google.com/gview?embedded=1&url="+encodeURIComponent(pdfUrl);
   var githubUrl="https://github.com/tamt00228-cyber/Tatam2007/blob/main/projects/"+doc.file;
-  frame.src=pdfUrl+"#toolbar=1&navpanes=0&view=FitH";
-  document.getElementById("openBtn").href=pdfUrl;
+  frame.src=viewerUrl;
+  document.getElementById("openBtn").href=viewerUrl;
   document.getElementById("githubBtn").href=githubUrl;
 })();
 </script>
