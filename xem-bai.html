@@ -3,26 +3,48 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#10051d">
 <meta name="robots" content="noindex">
 <title>Trình xem bài tập | Tạ Thị Tâm</title>
 <style>
-:root{color-scheme:dark;--bg:#10051d;--panel:#211035;--ink:#fff4ff;--mute:#d4bde8;--p1:#c77dff;--p2:#ff7ab8}
+:root{color-scheme:dark;--bg:#10051d;--panel:#211035;--ink:#fff4ff;--mute:#d4bde8;--p1:#c77dff;--p2:#ff7ab8;--line:rgba(199,125,255,.25)}
 *{box-sizing:border-box}
-html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:Arial,sans-serif}
-body{display:flex;flex-direction:column;min-height:100vh}
-header{position:sticky;top:0;z-index:2;display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:12px 16px;background:rgba(25,10,42,.97);border-bottom:1px solid rgba(199,125,255,.28)}
+html,body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:Arial,system-ui,sans-serif}
+body{min-height:100vh;display:flex;flex-direction:column}
+header{display:flex;align-items:center;gap:12px;flex-wrap:wrap;padding:12px 16px;background:rgba(25,10,42,.98);border-bottom:1px solid var(--line)}
 .brand{font-weight:700;color:#ffc4e6;margin-right:auto}
-#docTitle{font-size:14px;color:var(--mute);width:100%;order:3}
+#docTitle{width:100%;font-size:14px;color:var(--mute);order:3}
 .actions{display:flex;gap:8px;flex-wrap:wrap}
-.btn{display:inline-block;padding:9px 14px;border-radius:22px;text-decoration:none;color:#fff;background:linear-gradient(90deg,var(--p1),var(--p2));font-size:13px;font-weight:700;border:0;cursor:pointer}
+.btn{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border-radius:22px;text-decoration:none;color:#fff;background:linear-gradient(90deg,var(--p1),var(--p2));font-size:13px;font-weight:700;border:0;cursor:pointer}
 .btn.alt{background:transparent;border:1px solid var(--p1);color:#efcfff}
+#toolbar{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:center;gap:8px;flex-wrap:wrap;padding:10px;background:var(--panel);border-bottom:1px solid var(--line)}
+#toolbar button{min-width:42px;min-height:38px;border:1px solid rgba(199,125,255,.4);border-radius:12px;background:#32194b;color:#fff;font-size:14px;font-weight:700}
+#toolbar button:disabled{opacity:.38}
+#pageCount{min-width:88px;text-align:center;font-size:13px;color:var(--mute);font-variant-numeric:tabular-nums}
 main{flex:1;min-height:0;display:flex;flex-direction:column}
-#viewer{display:block;width:100%;height:calc(100vh - 128px);min-height:420px;border:0;background:#fff;flex:1}
-.note{padding:10px 14px;text-align:center;font-size:12px;line-height:1.55;color:var(--mute);background:var(--panel)}
+#documentArea{position:relative;flex:1;min-height:55vh;padding:18px 12px 28px;overflow:auto;background:radial-gradient(ellipse at top,#281243,#10051d 72%)}
+#pageWrap{width:100%;display:flex;flex-direction:column;align-items:center;min-height:320px}
+#pdfCanvas{display:none;max-width:100%;height:auto;background:#fff;box-shadow:0 10px 38px rgba(0,0,0,.4)}
+#status{min-height:260px;width:min(100%,520px);margin:auto;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:14px;text-align:center;color:var(--mute);padding:30px 18px}
+.spinner{width:42px;height:42px;border:4px solid rgba(199,125,255,.22);border-top-color:var(--p2);border-radius:50%;animation:spin .8s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+#status strong{color:#fff;font-size:15px}
+#status small{font-size:12px;line-height:1.6}
+#errorActions{display:none;gap:8px;flex-wrap:wrap;justify-content:center}
+#bottomNote{padding:9px 14px;text-align:center;font-size:12px;line-height:1.5;color:var(--mute);background:var(--panel);border-top:1px solid var(--line)}
+body.embed header{display:none}
+body.embed #documentArea{min-height:100%;padding:10px 6px 20px}
+body.embed #toolbar{padding:7px;gap:6px}
+body.embed #toolbar button{min-height:34px;min-width:38px}
+body.embed #bottomNote{display:none}
 @media(max-width:560px){
- header{padding:10px}.brand{width:100%}.actions{width:100%}.btn{flex:1;text-align:center}
- #viewer{height:calc(100vh - 180px);min-height:360px}
+ header{padding:10px}.brand{width:100%}.actions{width:100%}.actions .btn{flex:1}
+ #documentArea{padding:10px 4px 22px}
+ #toolbar{gap:6px}
+ #pageCount{min-width:74px;font-size:12px}
+ #status{min-height:230px}
 }
+@media(prefers-reduced-motion:reduce){.spinner{animation:none}}
 </style>
 </head>
 <body>
@@ -30,17 +52,36 @@ main{flex:1;min-height:0;display:flex;flex-direction:column}
   <div class="brand">♪ Tạ Thị Tâm · Portfolio</div>
   <div class="actions">
     <a class="btn alt" href="index.html#du-an">← Quay lại dự án</a>
-    <a class="btn" id="openBtn" target="_blank" rel="noopener">Mở trình xem ở tab mới ↗</a>
-    <a class="btn alt" id="githubBtn" target="_blank" rel="noopener">Xem bản trên GitHub</a>
+    <a class="btn" id="downloadBtn" target="_blank" rel="noopener">Mở PDF gốc ↗</a>
   </div>
   <div id="docTitle">Đang chuẩn bị tài liệu…</div>
 </header>
+<div id="toolbar" aria-label="Điều khiển tài liệu">
+  <button id="prevBtn" type="button" disabled aria-label="Trang trước">‹</button>
+  <span id="pageCount">Trang – / –</span>
+  <button id="nextBtn" type="button" disabled aria-label="Trang sau">›</button>
+  <button id="zoomOut" type="button" disabled aria-label="Thu nhỏ">−</button>
+  <button id="zoomIn" type="button" disabled aria-label="Phóng to">+</button>
+  <button id="fitBtn" type="button" disabled>Vừa màn hình</button>
+</div>
 <main>
-  <iframe id="viewer" title="Trình xem tài liệu PDF" src="about:blank" allow="fullscreen"></iframe>
-  <div class="note">
-    Tài liệu được hiển thị trực tiếp trong trang bằng trình xem PDF nhúng. Nếu khung xem chưa hiện nội dung, hãy chọn “Mở trình xem ở tab mới” hoặc “Xem bản trên GitHub”.
-  </div>
+  <section id="documentArea">
+    <div id="pageWrap">
+      <div id="status" role="status" aria-live="polite">
+        <div class="spinner" aria-hidden="true"></div>
+        <strong>Đang mở bài tập…</strong>
+        <small>Tài liệu đang được tải và hiển thị trực tiếp. Bạn không cần tải tệp xuống.</small>
+        <div id="errorActions">
+          <button class="btn" id="retryBtn" type="button">Thử lại</button>
+          <a class="btn alt" id="fallbackBtn" target="_blank" rel="noopener">Mở PDF gốc</a>
+        </div>
+      </div>
+      <canvas id="pdfCanvas" aria-label="Trang PDF"></canvas>
+    </div>
+  </section>
 </main>
+<div id="bottomNote">Dùng các nút ‹ › để chuyển trang và + / − để phóng to, thu nhỏ. Trên điện thoại có thể cuộn trang để đọc dễ hơn.</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
 <script>
 (function(){
   "use strict";
@@ -52,24 +93,100 @@ main{flex:1;min-height:0;display:flex;flex-direction:column}
     "05":{name:"Bài 5 – Trưng bày sản phẩm nội dung số",file:"bai-tap-05.pdf"},
     "06":{name:"Bài 6 – Sử dụng AI có trách nhiệm trong học tập và nghiên cứu",file:"bai-tap-06.pdf"}
   };
-  var key=new URLSearchParams(window.location.search).get("bai")||"01";
+  var params=new URLSearchParams(location.search);
+  var key=params.get("bai")||"01";
+  var isEmbed=params.get("embed")==="1";
+  if(isEmbed) document.body.classList.add("embed");
+
   var doc=docs[key];
   var title=document.getElementById("docTitle");
-  var frame=document.getElementById("viewer");
-  if(!doc){
-    title.textContent="Không tìm thấy bài tập được yêu cầu.";
-    frame.src="about:blank";
-    frame.style.display="none";
-    return;
+  var status=document.getElementById("status");
+  var canvas=document.getElementById("pdfCanvas");
+  var ctx=canvas.getContext("2d",{alpha:false});
+  var prev=document.getElementById("prevBtn"),next=document.getElementById("nextBtn");
+  var count=document.getElementById("pageCount");
+  var zoomIn=document.getElementById("zoomIn"),zoomOut=document.getElementById("zoomOut"),fitBtn=document.getElementById("fitBtn");
+  var pdfDoc=null,pageNum=1,zoom=1,renderTask=null,loadingTask=null,resizeTimer=null;
+
+  function showStatus(head,detail,isError){
+    status.style.display="flex";
+    status.innerHTML="";
+    if(!isError){
+      var spin=document.createElement("div");spin.className="spinner";spin.setAttribute("aria-hidden","true");status.appendChild(spin);
+    }
+    var strong=document.createElement("strong");strong.textContent=head;status.appendChild(strong);
+    var small=document.createElement("small");small.textContent=detail||"";status.appendChild(small);
+    if(isError){
+      var actions=document.createElement("div");actions.id="errorActions";actions.style.display="flex";actions.style.gap="8px";actions.style.flexWrap="wrap";actions.style.justifyContent="center";
+      var retry=document.createElement("button");retry.className="btn";retry.type="button";retry.textContent="Thử lại";retry.onclick=loadPdf;actions.appendChild(retry);
+      var fallback=document.createElement("a");fallback.className="btn alt";fallback.target="_blank";fallback.rel="noopener";fallback.href=pdfUrl;fallback.textContent="Mở PDF gốc";actions.appendChild(fallback);
+      status.appendChild(actions);
+    }
   }
-  document.title=doc.name+" | Tạ Thị Tâm";
-  title.textContent=doc.name;
-  var pdfUrl=new URL("projects/"+doc.file,window.location.href).href;
-  var viewerUrl="https://docs.google.com/gview?embedded=1&url="+encodeURIComponent(pdfUrl);
-  var githubUrl="https://github.com/tamt00228-cyber/Tatam2007/blob/main/projects/"+doc.file;
-  frame.src=viewerUrl;
-  document.getElementById("openBtn").href=viewerUrl;
-  document.getElementById("githubBtn").href=githubUrl;
+  function updateControls(){
+    count.textContent="Trang "+pageNum+" / "+(pdfDoc?pdfDoc.numPages:"–");
+    prev.disabled=!pdfDoc||pageNum<=1;next.disabled=!pdfDoc||pageNum>=pdfDoc.numPages;
+    zoomIn.disabled=!pdfDoc;zoomOut.disabled=!pdfDoc;fitBtn.disabled=!pdfDoc;
+  }
+  async function renderPage(n){
+    if(!pdfDoc)return;
+    pageNum=Math.max(1,Math.min(pdfDoc.numPages,n));
+    updateControls();
+    showStatus("Đang hiển thị trang "+pageNum+"…","Vui lòng đợi trong giây lát.");
+    canvas.style.display="none";
+    if(renderTask){try{renderTask.cancel();}catch(e){}}
+    try{
+      var page=await pdfDoc.getPage(pageNum);
+      var base=page.getViewport({scale:1});
+      var width=Math.max(260,document.getElementById("documentArea").clientWidth-28);
+      var fit=Math.min(1.65,width/base.width);
+      var viewport=page.getViewport({scale:fit*zoom});
+      var outputScale=Math.min(window.devicePixelRatio||1,2);
+      canvas.width=Math.floor(viewport.width*outputScale);
+      canvas.height=Math.floor(viewport.height*outputScale);
+      canvas.style.width=Math.floor(viewport.width)+"px";
+      canvas.style.height=Math.floor(viewport.height)+"px";
+      ctx.setTransform(outputScale,0,0,outputScale,0,0);
+      renderTask=page.render({canvasContext:ctx,viewport:viewport});
+      await renderTask.promise;
+      status.style.display="none";
+      canvas.style.display="block";
+      updateControls();
+      if(!isEmbed) document.getElementById("documentArea").scrollTop=0;
+    }catch(err){
+      if(err&&err.name==="RenderingCancelledException")return;
+      showStatus("Trang này chưa hiển thị được","Bạn hãy thử chuyển lại trang hoặc mở tệp PDF gốc.",true);
+    }
+  }
+  var pdfUrl="";
+  async function loadPdf(){
+    if(!doc){showStatus("Không tìm thấy bài tập","Đường dẫn bài tập không hợp lệ.",true);return;}
+    pdfUrl=new URL("projects/"+doc.file,location.href).href;
+    document.getElementById("downloadBtn").href=pdfUrl;
+    title.textContent=doc.name;
+    document.title=doc.name+" | Tạ Thị Tâm";
+    showStatus("Đang tải bài tập…","Đang kết nối tới tài liệu. Trang sẽ hiển thị ngay khi tải xong.");
+    try{
+      if(!window.pdfjsLib) throw new Error("Không tải được thư viện xem PDF. Hãy kiểm tra kết nối mạng và thử lại.");
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+      if(loadingTask){try{loadingTask.destroy();}catch(e){}}
+      loadingTask=window.pdfjsLib.getDocument({url:pdfUrl});
+      pdfDoc=await loadingTask.promise;
+      pageNum=1;zoom=1;updateControls();
+      await renderPage(1);
+    }catch(err){
+      console.error(err);
+      showStatus("Chưa mở được tài liệu","Bạn có thể thử lại hoặc mở PDF gốc trong tab mới. Nếu mạng chặn thư viện xem, hãy thử lại khi kết nối ổn định.",true);
+    }
+  }
+  prev.addEventListener("click",function(){renderPage(pageNum-1)});
+  next.addEventListener("click",function(){renderPage(pageNum+1)});
+  zoomIn.addEventListener("click",function(){zoom=Math.min(2.5,zoom+.15);renderPage(pageNum)});
+  zoomOut.addEventListener("click",function(){zoom=Math.max(.65,zoom-.15);renderPage(pageNum)});
+  fitBtn.addEventListener("click",function(){zoom=1;renderPage(pageNum)});
+  window.addEventListener("resize",function(){clearTimeout(resizeTimer);resizeTimer=setTimeout(function(){if(pdfDoc)renderPage(pageNum)},180)});
+  document.getElementById("fallbackBtn").href="#";
+  window.addEventListener("load",function(){loadPdf()});
 })();
 </script>
 </body>
