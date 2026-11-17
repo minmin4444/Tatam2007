@@ -81,7 +81,7 @@ body.embed #bottomNote{display:none}
   </section>
 </main>
 <div id="bottomNote">Dùng các nút ‹ › để chuyển trang và + / − để phóng to, thu nhỏ. Trên điện thoại có thể cuộn trang để đọc dễ hơn.</div>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js" defer></script>
+
 <script>
 (function(){
   "use strict";
@@ -159,6 +159,29 @@ body.embed #bottomNote{display:none}
     }
   }
   var pdfUrl="";
+  async function ensurePdfLibrary(){
+    if(window.pdfjsLib) return;
+    var sources=[
+      {lib:"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js",worker:"https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js"},
+      {lib:"https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.min.js",worker:"https://cdn.jsdelivr.net/npm/pdfjs-dist@3.11.174/build/pdf.worker.min.js"}
+    ];
+    var lastError=null;
+    for(var i=0;i<sources.length;i++){
+      try{
+        await new Promise(function(resolve,reject){
+          var script=document.createElement("script"),finished=false;
+          var timer=setTimeout(function(){if(finished)return;finished=true;script.remove();reject(new Error("Hết thời gian tải thư viện PDF."));},10000);
+          script.src=sources[i].lib;script.async=true;
+          script.onload=function(){if(finished)return;finished=true;clearTimeout(timer);if(window.pdfjsLib)resolve();else reject(new Error("Thư viện PDF không khởi tạo."));};
+          script.onerror=function(){if(finished)return;finished=true;clearTimeout(timer);reject(new Error("Không kết nối được CDN PDF."));};
+          document.head.appendChild(script);
+        });
+        window.pdfjsLib.GlobalWorkerOptions.workerSrc=sources[i].worker;
+        return;
+      }catch(e){lastError=e;}
+    }
+    throw lastError||new Error("Không tải được thư viện PDF.");
+  }
   async function loadPdf(){
     if(!doc){showStatus("Không tìm thấy bài tập","Đường dẫn bài tập không hợp lệ.",true);return;}
     pdfUrl=new URL("projects/"+doc.file,location.href).href;
@@ -167,8 +190,7 @@ body.embed #bottomNote{display:none}
     document.title=doc.name+" | Tạ Thị Tâm";
     showStatus("Đang tải bài tập…","Đang kết nối tới tài liệu. Trang sẽ hiển thị ngay khi tải xong.");
     try{
-      if(!window.pdfjsLib) throw new Error("Không tải được thư viện xem PDF. Hãy kiểm tra kết nối mạng và thử lại.");
-      window.pdfjsLib.GlobalWorkerOptions.workerSrc="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+      await ensurePdfLibrary();
       if(loadingTask){try{loadingTask.destroy();}catch(e){}}
       loadingTask=window.pdfjsLib.getDocument({url:pdfUrl});
       pdfDoc=await loadingTask.promise;
@@ -186,7 +208,7 @@ body.embed #bottomNote{display:none}
   fitBtn.addEventListener("click",function(){zoom=1;renderPage(pageNum)});
   window.addEventListener("resize",function(){clearTimeout(resizeTimer);resizeTimer=setTimeout(function(){if(pdfDoc)renderPage(pageNum)},180)});
   document.getElementById("fallbackBtn").href="#";
-  window.addEventListener("load",function(){loadPdf()});
+  if(document.readyState==="loading") document.addEventListener("DOMContentLoaded",loadPdf); else loadPdf();
 })();
 </script>
 </body>
