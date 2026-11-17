@@ -427,10 +427,13 @@ document.addEventListener("visibilitychange",function(){if(!ac||!on)return;if(do
       if(!modal || !frame || !titleNode || !openLink) throw new Error("Không tìm thấy khung xem PDF.");
       activeUrl = url;
       titleNode.textContent = title || titles[index] || ("Bài tập " + (Number(index) + 1));
-      openLink.href = url + "#view=FitH";
-      frame.src = url + "#view=FitH";
+      // Dùng trình xem PDF nhúng để nội dung hiện ngay trong trang.
+      var viewerUrl = "https://docs.google.com/gview?embedded=1&url=" + encodeURIComponent(url);
+      openLink.href = viewerUrl;
+      openLink.textContent = "↗ Mở trình xem ở tab mới";
       modal.classList.add("on");
       document.body.style.overflow = "hidden";
+      frame.src = viewerUrl;
     }catch(err){
       window.alert("Không mở được bài tập. Bạn hãy tải lại trang và thử lại. Chi tiết: " + err.message);
     }
